@@ -1,0 +1,83 @@
+{
+    "initial_event": {
+        "Running" : false,
+        "Succeeded": false,
+        "Failed": false,
+        "Not_Found": false,
+        "done": false,
+        "error": false,
+        "status": "",
+        "order_created": false
+    },
+    "max_steps": 100,
+    "name": "Azure Workflow Execution",
+    "description": "Executes the Azure workflow and updates the status from the Azure to the Service Catalog",
+    "states": {
+        "Arm_Template_Execution": {
+            "type": "nflex",
+            "next": "Get_Azure_Status",
+            "params": {
+                "handler": "main.arm_deployment",
+                "module_id": ""
+            },
+            "initial": true
+        },
+        "Get_Azure_Status": {
+            "type": "nflex",
+            "next": "check-azure-status",
+            "params": {
+                "handler": "main.get_azure_status",
+                "module_id": ""
+            }
+        },
+        "check-azure-status": {
+            "label": "Check Azure status",
+            "type": "switch",
+            "params": {
+                "cases": [{
+                    "variable": "Succeeded",
+                    "operator": "BoolEquals",
+                    "value": true,
+                    "next": "Update_Order_status"
+                }, {
+                    "variable": "Failed",
+                    "operator": "BoolEquals",
+                    "value": true,
+                    "next": "Update_Order_status"
+                },{
+                    "variable": "Not_Found",
+                    "operator": "BoolEquals",
+                    "value": true,
+                    "next": "Update_Order_status"
+                },{
+                    "variable": "Running",
+                    "operator": "BoolEquals",
+                    "value": true,
+                    "next": "sleep-until-azure-workflow-executed"
+                }],
+                "default": "sleep-until-azure-workflow-executed"
+            }            
+        },
+        "Update_Order_status": {
+            "type": "nflex",
+            "next":"done",
+            "params": {
+                "handler": "main.update_order",
+                "module_id": ""
+            }
+        },
+        "done":{
+            "type":"noop",
+            "final": true
+        },
+        "sleep-until-azure-workflow-executed": {
+            "label": "Sleep",
+            "type": "sleep",
+            "next": "Get_Azure_Status",
+            "params": {
+                "seconds": 5
+            }
+        }
+    },
+    "timeout": 0
+}

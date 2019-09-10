@@ -1,0 +1,14 @@
+Metadata-Version: 2.0
+Name: azure-batch
+Version: 1.0.0
+Summary: Microsoft Azure Batch Client Library for Python
+Home-page: https://github.com/Azure/azure-sdk-for-python
+Author: Microsoft Corporation
+Author-email: ptvshelp@microsoft.com
+License: MIT License
+Requires-Dist: azure-common[autorest] (==1.1.4)
+Requires-Dist: azure-mgmt-nspkg
+
+Microsoft Azure SDK for Python
+
+
